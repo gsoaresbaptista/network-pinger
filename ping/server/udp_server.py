@@ -1,15 +1,13 @@
 import socket
-from typing import Dict, Union, Tuple
+from typing import Dict, Union
 from server.server_interface import ServerInterface
 
 
 class UDPServer(ServerInterface):
     '''UDP server implementation'''
 
-    def __init__(self) -> None:
-        super().__init__()
-        self.__address: Tuple[str, int]
-        self.__connection: socket.socket
+    def __init__(self, timeout: Union[float, int] = 5) -> None:
+        super().__init__(timeout)
         self.emmit('UDP Server initialized')
 
     def connect(self, server_ip: str, server_port: int) -> None:
@@ -18,9 +16,10 @@ class UDPServer(ServerInterface):
         :param server_pot - int, port to host server
         :return None
         '''
-        self.__address = (server_ip, server_port)
-        self.__connection = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.__connection.bind(self.__address)
+        self._address = (server_ip, server_port)
+        self._connection = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self._connection.settimeout(self._timeout)
+        self._connection.bind(self._address)
         self.emmit(f"Running on {server_ip}:{server_port}")
 
     def disconnect(self) -> None:
@@ -28,7 +27,7 @@ class UDPServer(ServerInterface):
         :param None
         :return None
         '''
-        self.__connection.close()
+        self._connection.close()
         self.emmit('Server connection closed')
 
     def check(self) -> Dict[str, Union[int, float, str]]:
@@ -37,6 +36,13 @@ class UDPServer(ServerInterface):
         :return None
         '''
         return {
-            'server_ip': self.__address[0],
-            'server_port': self.__address[1],
+            'server_ip': self._address[0],
+            'server_port': self._address[1],
+            'timeout_time': self._timeout,
         }
+
+    def listen(self) -> None:
+        '''.'''
+        message, address = self._connection.recvfrom(40)
+        address = f"{address[0]}:{address[1]}"
+        self.emmit(f"'{message.decode('utf8')}' received from {address}")
