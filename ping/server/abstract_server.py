@@ -5,7 +5,7 @@ import datetime
 import socket
 
 
-class ServerInterface(ABC):
+class AbstractServer(ABC):
     '''Assign Interface Contracts to a server object.'''
 
     def __init__(self, timeout: Union[float, int] = 5) -> None:

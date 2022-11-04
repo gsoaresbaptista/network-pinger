@@ -1,9 +1,9 @@
 import socket
 from typing import Dict, Union
-from server.server_interface import ServerInterface
+from server.abstract_server import AbstractServer
 
 
-class UDPServer(ServerInterface):
+class UDPServer(AbstractServer):
     '''UDP server implementation'''
 
     def __init__(self, timeout: Union[float, int] = 5) -> None:
