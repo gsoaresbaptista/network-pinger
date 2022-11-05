@@ -65,7 +65,7 @@ class AbstractServer(ABC):
     def _handle_package(self, package: str) -> Tuple[int, int, int, str]:
         '''Handle a standard-compliant package
         Unpack all package data into single variables
-        :param package - str, packet decoded in utf8 format
+        :param package - str, packet decoded in ascii format
         :return
             - id_sequence - int, sequence number
             - package_type - int, 0 if ping or 1 for pong
@@ -86,6 +86,6 @@ class AbstractServer(ABC):
         '''
         package, received_address = self._connection.recvfrom(64)
         address = f"{received_address[0]}:{received_address[1]}"
-        message = package.decode('utf8')
+        package = package.decode('ascii')
         seq, req, timestamp, content = self._handle_package(package)
         self.emmit('RECV', f"'{content}' received from {address}")

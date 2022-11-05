@@ -29,7 +29,7 @@ def create_message(package_id: int, message: str) -> bytes:
     ping_std = '0'  # 0 = ping, 1 = pong
     timestamp = str(get_timestamp())  # initial timestamp
     package_message = id_str + ping_std + timestamp + message.ljust(30, '\0')
-    return package_message.encode('utf8')
+    return package_message.encode('ascii')
 
 
 # generate message
