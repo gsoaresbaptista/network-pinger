@@ -84,8 +84,8 @@ class AbstractServer(ABC):
         :param None
         :return None
         '''
-        package, received_address = self._connection.recvfrom(64)
+        byte_stream, received_address = self._connection.recvfrom(64)
         address = f"{received_address[0]}:{received_address[1]}"
-        package = package.decode('ascii')
+        package = byte_stream.decode('ascii')
         seq, req, timestamp, content = self._handle_package(package)
         self.emmit('RECV', f"'{content}' received from {address}")
