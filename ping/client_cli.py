@@ -18,16 +18,13 @@ if __name__ == '__main__':
     parser.add_argument(
         "-c",
         "--csv",
-        help='Save all package data in a csv file.',
+        help='Save all packet data in a csv file.',
         action='store_true',
     )
     parser.add_argument(
         "-t",
         "--timeout",
-        help=(
-            'Set how long to wait for a client to receive a '
-            'response before receiving a timeout, in seconds.'
-        ),
+        help=('Set how long to wait for a client to receive a ' 'response before receiving a timeout, in seconds.'),
         action='store',
         default=3,
     )

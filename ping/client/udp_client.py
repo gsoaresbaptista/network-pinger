@@ -2,7 +2,7 @@ import socket
 import random
 import string
 from typing import Dict, Tuple
-from package import create_package, read_package, check_package, get_timestamp
+from packet import create_packet, read_packet, check_packet, get_timestamp
 from .abstract_client import AbstractClient
 
 
@@ -49,23 +49,19 @@ class UDPClient(AbstractClient):
             'timeout_time': self._timeout,
         }
 
-    def send_to_server(
-        self, seqid: str = '0', message: str | None = None
-    ) -> Tuple[str, int]:
+    def send_to_server(self, seqid: str = '0', message: str | None = None) -> Tuple[str, int]:
         '''.'''
         # generate message
         if message is None:
             content_size = random.randint(1, 30)
-            message = ''.join(
-                random.choices(string.ascii_lowercase, k=content_size)
-            )
+            message = ''.join(random.choices(string.ascii_lowercase, k=content_size))
 
         # send message to server
-        package = create_package(seqid, '0', message)
-        self._socket.sendto(package, self._server_address)
+        packet = create_packet(seqid, '0', message)
+        self._socket.sendto(packet, self._server_address)
 
-        # save the sent package to compare with the response
-        self._sent_package = read_package(package.decode('ascii'))
+        # save the sent packet to compare with the response
+        self._sent_packet = read_packet(packet.decode('ascii'))
 
         return self._server_address
 
@@ -76,25 +72,23 @@ class UDPClient(AbstractClient):
         try:
             while not valid:
                 response, _ = self._socket.recvfrom(1024)
-                sid, ptype, time, content = read_package(
-                    response.decode('ascii')
-                )
-                valid, message = check_package(sid, ptype, time, content, False)
+                sid, ptype, time, content = read_packet(response.decode('ascii'))
+                valid, message = check_packet(sid, ptype, time, content, False)
 
-                # compare received package with the last sent one
-                valid = sid == self._sent_package[0]
+                # compare received packet with the last sent one
+                valid = sid == self._sent_packet[0]
                 message = 'Sequence id is not the same'
 
                 if not valid:
                     AbstractClient.emmit('ERROR', str(message))
                 else:
-                    # save the received package to compare
+                    # save the received packet to compare
                     current_time = get_timestamp()
-                    self._received_package = (sid, ptype, current_time, content)
+                    self._received_packet = (sid, ptype, current_time, content)
                     return float(current_time) - float(time)
         except TimeoutError:
             AbstractClient.emmit('ERROR', 'Timeout waiting for response')
-            # save the last received package to compare
-            self._received_package = ('0000', '0', '0000', 'TIMEOUTERROR')
+            # save the last received packet to compare
+            self._received_packet = ('0000', '0', '0000', 'TIMEOUTERROR')
 
             return None

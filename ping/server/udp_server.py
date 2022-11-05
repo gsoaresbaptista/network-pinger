@@ -26,15 +26,13 @@ class UDPServer(AbstractServer):
         self._address = (server_ip, server_port)
         self._connection = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._connection.bind(self._address)
-        self.emmit('INIT', f"Listen packages on {server_ip}:{server_port}")
+        self.emmit('INIT', f"Listen packets on {server_ip}:{server_port}")
         # creating socket to send
         self._response_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.emmit('INIT', 'Response socket created')
         # set maximum time without request
         self._connection.settimeout(self._timeout)
-        self.emmit(
-            'INFO', f'Set {self._timeout} seconds as maximum no-request time'
-        )
+        self.emmit('INFO', f'Set {self._timeout} seconds as maximum no-request time')
 
     def disconnect(self) -> None:
         '''Close server connection.
@@ -55,15 +53,13 @@ class UDPServer(AbstractServer):
             'server_port': self._address[1],
         }
 
-    def _send_reply(
-        self, reply: bytes | None, address: Tuple[str, int]
-    ) -> None:
+    def _send_reply(self, reply: bytes | None, address: Tuple[str, int]) -> None:
         '''.'''
         if reply is not None:
             self._response_socket.sendto(reply, address)
 
     def _listen_one(self) -> Tuple[bytes | None, Tuple[str, int]]:
-        '''Procedure to handle a packaged in the defined pattern.
+        '''Procedure to handle a packetd in the defined pattern.
         :param None
         :return None
         '''

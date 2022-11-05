@@ -31,8 +31,8 @@ class AbstractClient(ABC):
         self._timeout = timeout
         self._socket: socket.socket
         self._server_address = (server_ip, server_port)
-        self._sent_package: Tuple[str, str, str, str]
-        self._received_package: Tuple[str, str, str, str]
+        self._sent_packet: Tuple[str, str, str, str]
+        self._received_packet: Tuple[str, str, str, str]
         self._sent = 0
         self._received = 0
         self._rtts: List[float] = []
@@ -76,7 +76,7 @@ class AbstractClient(ABC):
         '''.'''
 
         if save_csv:
-            self._csv = open('packages_data.csv', 'w', encoding='utf8')
+            self._csv = open('packets_data.csv', 'w', encoding='utf8')
             self._write_csv_list(
                 join_list(
                     ['sid', 'type', 'timestamp', 'message'],
@@ -109,10 +109,10 @@ class AbstractClient(ABC):
                     f'Reply received successfully, rtt = {int(rtt)}ms',
                 )
             else:
-                self.emmit('ERROR', 'Package was lost')
+                self.emmit('ERROR', 'packet was lost')
 
             if self._csv is not None:
-                self._write_csv_list(merge_alternatively(self._sent_package, self._received_package))
+                self._write_csv_list(merge_alternatively(self._sent_packet, self._received_packet))
                 self._csv.write(f",{str(rtt)}\n")
                 self._csv.flush()
 

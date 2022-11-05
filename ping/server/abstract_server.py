@@ -4,7 +4,7 @@ import os
 import sys
 import datetime
 import socket
-from package import create_package, read_package, check_package
+from packet import create_packet, read_packet, check_packet
 
 
 class AbstractServer(ABC):
@@ -47,15 +47,13 @@ class AbstractServer(ABC):
 
     @abstractmethod
     def _listen_one(self) -> Tuple[bytes | None, Tuple[str, int]]:
-        '''Procedure to handle a packaged in the defined pattern.
+        '''Procedure to handle a packetd in the defined pattern.
         :param None
         :return None
         '''
 
     @abstractmethod
-    def _send_reply(
-        self, reply: bytes | None, address: Tuple[str, int]
-    ) -> None:
+    def _send_reply(self, reply: bytes | None, address: Tuple[str, int]) -> None:
         '''.'''
 
     def listen(self) -> None:
@@ -72,7 +70,7 @@ class AbstractServer(ABC):
                 # emmit received
                 self.emmit(
                     'RECV',
-                    f"package received from {f'{address[0]}:{address[1]}'}",
+                    f"packet received from {f'{address[0]}:{address[1]}'}",
                 )
 
                 self._simulations(response)
@@ -106,16 +104,16 @@ class AbstractServer(ABC):
 
     @staticmethod
     def _create_response(byte_stream: bytes) -> bytes | None:
-        '''Make a response to received package
-        :param byte_stream - bytes, package received
+        '''Make a response to received packet
+        :param byte_stream - bytes, packet received
         :return bytes if packet is consistent otherwise None
         '''
-        package = byte_stream.decode('ascii')
-        sid, ptype, time, content = read_package(package)
-        valid, message = check_package(sid, ptype, time, content, True)
+        packet = byte_stream.decode('ascii')
+        sid, ptype, time, content = read_packet(packet)
+        valid, message = check_packet(sid, ptype, time, content, True)
 
         if valid:
-            return create_package(sid, '1', content, time)
+            return create_packet(sid, '1', content, time)
 
         AbstractServer.emmit('ERROR', str(message))
         return None

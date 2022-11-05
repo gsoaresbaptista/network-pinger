@@ -20,14 +20,12 @@ def get_int_timestamp() -> int:
     return int((time.time() / 10 % 1) * 10000)
 
 
-def check_package(
-    sid: str, ptype: str, timestamp: str, content: str, ping_expected: bool
-) -> Tuple[bool, str | None]:
-    '''Check package consistency
+def check_packet(sid: str, ptype: str, timestamp: str, content: str, ping_expected: bool) -> Tuple[bool, str | None]:
+    '''Check packet consistency
     :param sid - str, sequence number
     :param ptype - char, 0 to ping and 1 to pong
-    :param timestamp - str, package timestamp
-    :param content - str, package content
+    :param timestamp - str, packet timestamp
+    :param content - str, packet content
     :param ping_expected - bool, True if ping is expected, otherwise False
     :return True if it passes all integrity conditions, False otherwise
     '''
