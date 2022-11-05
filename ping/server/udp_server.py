@@ -8,8 +8,11 @@ from server.abstract_server import AbstractServer
 class UDPServer(AbstractServer):
     '''UDP server implementation'''
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(
+        self,
+        timeout: float | int = 5,
+    ) -> None:
+        super().__init__(timeout)
         self.emmit('INIT', 'UDP Server initialized')
         self._configurations = {'simulate_delay': True}
 
@@ -27,6 +30,11 @@ class UDPServer(AbstractServer):
         # creating socket to send
         self._response_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.emmit('INIT', 'Response socket created')
+        # set maximum time without request
+        self._connection.settimeout(self._timeout)
+        self.emmit(
+            'INFO', f'Set {self._timeout} seconds as maximum no-request time'
+        )
 
     def disconnect(self) -> None:
         '''Close server connection.

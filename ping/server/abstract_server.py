@@ -10,7 +10,10 @@ from package import create_package, read_package, check_package
 class AbstractServer(ABC):
     '''Assign Interface Contracts to a server object.'''
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        timeout: float | int,
+    ) -> None:
         super().__init__()
         # set initial environment
         os.environ["TZ"] = "UTC"
@@ -18,6 +21,7 @@ class AbstractServer(ABC):
         self._connection: socket.socket
         self._response_socket: socket.socket
         self._configurations: Dict[str, bool | int | float | str] = {}
+        self._timeout = timeout
 
     @abstractmethod
     def connect(self, server_ip: str, server_port: int) -> None:
@@ -83,6 +87,12 @@ class AbstractServer(ABC):
                 # force emmits to stdout
                 sys.stdout.flush()
         except KeyboardInterrupt:
+            self.disconnect()
+        except TimeoutError:
+            self.emmit(
+                'ERROR',
+                f'Maximum no-request time of {self._timeout} seconds exceeded',
+            )
             self.disconnect()
 
     @staticmethod

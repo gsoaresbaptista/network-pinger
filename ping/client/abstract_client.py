@@ -15,7 +15,7 @@ class AbstractClient(ABC):
         self,
         server_ip: str,
         server_port: int,
-        timeout: float | int = 5,
+        timeout: float | int,
         save_csv: bool = False,
     ) -> None:
         '''Create a client for a specific server.
