@@ -29,7 +29,6 @@ if __name__:
     server: Server = UDPServer()
     server.connect('127.0.0.1', 3000)
     server.listen()
-    server.disconnect()
 
     # revert stdout change
     if args.logger:

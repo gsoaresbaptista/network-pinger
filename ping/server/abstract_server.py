@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List
 import os
 import sys
 import datetime
@@ -55,13 +55,14 @@ class AbstractServer(ABC):
         except KeyboardInterrupt:
             self.disconnect()
 
-    def emmit(self, category: str, message: str) -> None:
+    @staticmethod
+    def emmit(category: str, message: str) -> None:
         '''Emmit a message to standart output.
         :param message - str, text to emmit
         :return None
         '''
         now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        print(f"{now} - {category:4} | {message}")
+        print(f"{now} - {category:5} | {message}")
 
     # private methods, using defined pattern for packages
     def _listen_one(self) -> None:
@@ -75,12 +76,27 @@ class AbstractServer(ABC):
         self.emmit('RECV', f"package received from {address}")
         # responding
         response: bytes = self._create_response(byte_stream)
-        self._response_socket.sendto(response, received_address)
+        if response is not None:
+            self._response_socket.sendto(response, received_address)
 
-    def _create_response(self, byte_stream: bytes) -> bytes:
+    @staticmethod
+    def _check_package_state(
+        sid: str, ptype: int, time: str, content: str
+    ) -> bool:
+        '''.'''
+        if not sid.isnumeric():
+            AbstractServer.emmit('ERROR', 'Non numeric sequence number')
+            return False
+        elif ptype != '0':
+            AbstractServer.emmit('ERROR', 'Received pong instead of ping')
+            return False
+        return True
+
+    @staticmethod
+    def _create_response(byte_stream: bytes) -> bytes | None:
         '''.'''
         package = byte_stream.decode('ascii')
         sid, ptype, time, content = read_package(package)
-        # TODO: Check if is ping
-        response: bytes = create_package(sid, 1, content)
-        return response
+        valid = AbstractServer._check_package_state(sid, ptype, time, content)
+        response: bytes = create_package(sid, '1', content)
+        return response if valid else None
