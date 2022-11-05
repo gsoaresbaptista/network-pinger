@@ -14,6 +14,6 @@ def read_package(package: str) -> Tuple[int, int, str, str]:
     id_sequence = int(package[:5])
     package_type = int(package[5])
     timestamp = package[6:10]
-    content = package[10:]
+    content = ''.join(filter(lambda l: l != '\0', str(package[10:])))
 
     return id_sequence, package_type, timestamp, content
