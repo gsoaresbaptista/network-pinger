@@ -18,7 +18,6 @@ def create_package(
     :param message - str, package content
     :return package - bytes, package as byte stream
     '''
-    # TODO: Check params
     id_str = package_id.rjust(5, '0')
     ping_std = package_type  # 0 = ping, 1 = pong
     timestamp = get_timestamp() if time is None else time

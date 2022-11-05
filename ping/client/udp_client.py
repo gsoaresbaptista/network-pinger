@@ -68,13 +68,12 @@ class UDPClient(AbstractClient):
         server_ip, server_port = self._server_address
         self.emmit('SENT', f"Message sent to server {server_ip}:{server_port}")
 
-    def wait_response(self) -> float | None:
+    def wait_response(self) -> float | None:  # type: ignore
         '''.'''
         valid = False
 
         try:
             while not valid:
-                print('esperando')
                 response, _ = self._socket.recvfrom(1024)
                 sid, ptype, time, content = read_package(
                     response.decode('ascii')
@@ -89,11 +88,7 @@ class UDPClient(AbstractClient):
                     AbstractClient.emmit('ERROR', str(message))
                 else:
                     AbstractClient.emmit('RECV', 'Reply received successfully')
-                    print(
-                        float(time),
-                        float(get_timestamp()),
-                    )
                     return float(get_timestamp()) - float(time)
         except TimeoutError:
-            print('timeout')
+            AbstractClient.emmit('ERROR', 'Timeout waiting for response')
             return None
