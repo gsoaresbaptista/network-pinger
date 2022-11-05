@@ -79,6 +79,7 @@ class UDPClient(AbstractClient):
 
             # compare received package with the last sent one
             valid = sid == self._sent_package[0]
+            message = 'Sequence id is not the same'
 
             if not valid:
                 AbstractClient.emmit('ERROR', str(message))
