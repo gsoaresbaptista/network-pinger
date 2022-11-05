@@ -37,6 +37,7 @@ class AbstractClient(ABC):
         self._times: List[float] = []
         self._csv: TextIOWrapper | None
         self._create_csv(save_csv)
+        self.emmit('INIT', 'UDP Client initialized')
 
     @abstractmethod
     def connect(self) -> None:
@@ -48,7 +49,7 @@ class AbstractClient(ABC):
     @abstractmethod
     def send_to_server(
         self, seqid: str = '0', message: str | None = None
-    ) -> None:
+    ) -> Tuple[str, int]:
         '''.'''
 
     @abstractmethod
@@ -89,8 +90,12 @@ class AbstractClient(ABC):
     def run(self) -> None:
         '''.'''
         for i in range(10):
-            self.send_to_server(str(i))
+            server_ip, server_port = self.send_to_server(str(i))
+            address = f"{server_ip}:{server_port}"
+            self.emmit('SENT', f"Message sent to server {address}")
+
             rtt = self.wait_response()
+            self.emmit('RECV', f'Reply received successfully, rtt = {rtt}ms')
 
             # fix rtt if timestamp exceeds limit
             if rtt is not None and rtt < 0:

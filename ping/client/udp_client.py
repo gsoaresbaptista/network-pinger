@@ -1,7 +1,7 @@
 import socket
 import random
 import string
-from typing import Dict
+from typing import Dict, Tuple
 from package import create_package, read_package, check_package, get_timestamp
 from .abstract_client import AbstractClient
 
@@ -17,7 +17,6 @@ class UDPClient(AbstractClient):
         save_csv: bool = False,
     ) -> None:
         super().__init__(server_ip, server_port, timeout, save_csv)
-        self.emmit('INIT', 'UDP Client initialized')
         self.connect()
 
     def connect(self) -> None:
@@ -52,7 +51,7 @@ class UDPClient(AbstractClient):
 
     def send_to_server(
         self, seqid: str = '0', message: str | None = None
-    ) -> None:
+    ) -> Tuple[str, int]:
         '''.'''
         # generate message
         if message is None:
@@ -68,9 +67,7 @@ class UDPClient(AbstractClient):
         # save the sent package to compare with the response
         self._sent_package = read_package(package.decode('ascii'))
 
-        # emmit message
-        server_ip, server_port = self._server_address
-        self.emmit('SENT', f"Message sent to server {server_ip}:{server_port}")
+        return self._server_address
 
     def wait_response(self) -> float | None:  # type: ignore
         '''.'''
@@ -91,11 +88,9 @@ class UDPClient(AbstractClient):
                 if not valid:
                     AbstractClient.emmit('ERROR', str(message))
                 else:
-                    AbstractClient.emmit('RECV', 'Reply received successfully')
                     # save the received package to compare
                     current_time = get_timestamp()
                     self._received_package = (sid, ptype, current_time, content)
-
                     return float(current_time) - float(time)
         except TimeoutError:
             AbstractClient.emmit('ERROR', 'Timeout waiting for response')
