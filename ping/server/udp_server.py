@@ -1,6 +1,7 @@
 import socket
 from typing import Dict, Tuple
 from server.abstract_server import AbstractServer
+from package import get_int_timestamp
 
 
 class UDPServer(AbstractServer):
@@ -9,6 +10,7 @@ class UDPServer(AbstractServer):
     def __init__(self) -> None:
         super().__init__()
         self.emmit('INIT', 'UDP Server initialized')
+        self._configurations = {'simulate_delay': True}
 
     def connect(self, server_ip: str, server_port: int) -> None:
         '''Hosts server on server_ip on server_port.
@@ -63,3 +65,11 @@ class UDPServer(AbstractServer):
         # responding
         response: bytes | None = self._create_response(byte_stream)
         return response, received_address
+
+    def _simulations(self, response: bytes | None) -> None:
+        '''.'''
+        if response is not None:
+            if self._configurations['simulate_delay']:
+                wait_time = 1000
+                while get_int_timestamp() - int(response[6:10]) < wait_time:
+                    continue

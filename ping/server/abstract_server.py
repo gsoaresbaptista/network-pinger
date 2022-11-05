@@ -17,6 +17,7 @@ class AbstractServer(ABC):
         self._address: Tuple[str, int]
         self._connection: socket.socket
         self._response_socket: socket.socket
+        self._configurations: Dict[str, bool | int | float | str] = {}
 
     @abstractmethod
     def connect(self, server_ip: str, server_port: int) -> None:
@@ -63,6 +64,7 @@ class AbstractServer(ABC):
         try:
             while running:
                 response, address = self._listen_one()
+                self._simulations(response)
                 self._send_reply(response, address)
                 sys.stdout.flush()
         except KeyboardInterrupt:
@@ -92,3 +94,6 @@ class AbstractServer(ABC):
 
         AbstractServer.emmit('ERROR', str(message))
         return None
+
+    def _simulations(self, response: bytes | None) -> None:
+        '''.'''
