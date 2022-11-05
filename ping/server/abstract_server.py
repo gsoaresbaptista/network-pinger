@@ -41,11 +41,17 @@ class AbstractServer(ABC):
         '''
 
     @abstractmethod
-    def _listen_one(self) -> None:
+    def _listen_one(self) -> Tuple[bytes | None, Tuple[str, int]]:
         '''Procedure to handle a packaged in the defined pattern.
         :param None
         :return None
         '''
+
+    @abstractmethod
+    def _send_reply(
+        self, reply: bytes | None, address: Tuple[str, int]
+    ) -> None:
+        '''.'''
 
     def listen(self) -> None:
         '''Makes the server listen and expect to receive some data.
@@ -56,7 +62,8 @@ class AbstractServer(ABC):
 
         try:
             while running:
-                self._listen_one()
+                response, address = self._listen_one()
+                self._send_reply(response, address)
                 sys.stdout.flush()
         except KeyboardInterrupt:
             self.disconnect()

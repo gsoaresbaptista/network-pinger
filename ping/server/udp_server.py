@@ -1,5 +1,5 @@
 import socket
-from typing import Dict
+from typing import Dict, Tuple
 from server.abstract_server import AbstractServer
 
 
@@ -44,7 +44,14 @@ class UDPServer(AbstractServer):
             'server_port': self._address[1],
         }
 
-    def _listen_one(self) -> None:
+    def _send_reply(
+        self, reply: bytes | None, address: Tuple[str, int]
+    ) -> None:
+        '''.'''
+        if reply is not None:
+            self._response_socket.sendto(reply, address)
+
+    def _listen_one(self) -> Tuple[bytes | None, Tuple[str, int]]:
         '''Procedure to handle a packaged in the defined pattern.
         :param None
         :return None
@@ -55,5 +62,4 @@ class UDPServer(AbstractServer):
         self.emmit('RECV', f"package received from {address}")
         # responding
         response: bytes | None = self._create_response(byte_stream)
-        if response is not None:
-            self._response_socket.sendto(response, received_address)
+        return response, received_address
