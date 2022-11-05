@@ -40,6 +40,13 @@ class AbstractServer(ABC):
         :return None
         '''
 
+    @abstractmethod
+    def _listen_one(self) -> None:
+        '''Procedure to handle a packaged in the defined pattern.
+        :param None
+        :return None
+        '''
+
     def listen(self) -> None:
         '''Makes the server listen and expect to receive some data.
         :param None
@@ -62,21 +69,6 @@ class AbstractServer(ABC):
         '''
         now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         print(f"{now} - {category:5} | {message}")
-
-    # private methods, using defined pattern for packages
-    def _listen_one(self) -> None:
-        '''Procedure to handle a packaged in the defined pattern.
-        :param None
-        :return None
-        '''
-        # receiving
-        byte_stream, received_address = self._connection.recvfrom(1024)
-        address = f"{received_address[0]}:{received_address[1]}"
-        self.emmit('RECV', f"package received from {address}")
-        # responding
-        response: bytes | None = self._create_response(byte_stream)
-        if response is not None:
-            self._response_socket.sendto(response, received_address)
 
     @staticmethod
     def _check_package_state(

@@ -42,5 +42,18 @@ class UDPServer(AbstractServer):
         return {
             'server_ip': self._address[0],
             'server_port': self._address[1],
-            'timeout_time': self._timeout,
         }
+
+    def _listen_one(self) -> None:
+        '''Procedure to handle a packaged in the defined pattern.
+        :param None
+        :return None
+        '''
+        # receiving
+        byte_stream, received_address = self._connection.recvfrom(1024)
+        address = f"{received_address[0]}:{received_address[1]}"
+        self.emmit('RECV', f"package received from {address}")
+        # responding
+        response: bytes | None = self._create_response(byte_stream)
+        if response is not None:
+            self._response_socket.sendto(response, received_address)
