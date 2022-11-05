@@ -10,13 +10,12 @@ from package import create_package, read_package
 class AbstractServer(ABC):
     '''Assign Interface Contracts to a server object.'''
 
-    def __init__(self, timeout: float | int = 5) -> None:
+    def __init__(self) -> None:
         super().__init__()
         # set initial environment
         os.environ["TZ"] = "UTC"
         self._address: Tuple[str, int]
         self._connection: socket.socket
-        self._timeout = timeout
         self._response_socket: socket.socket
 
     @abstractmethod

@@ -6,8 +6,8 @@ from server.abstract_server import AbstractServer
 class UDPServer(AbstractServer):
     '''UDP server implementation'''
 
-    def __init__(self, timeout: float | int = 5) -> None:
-        super().__init__(timeout)
+    def __init__(self) -> None:
+        super().__init__()
         self.emmit('INIT', 'UDP Server initialized')
 
     def connect(self, server_ip: str, server_port: int) -> None:
