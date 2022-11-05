@@ -75,4 +75,4 @@ class UDPServer(AbstractServer):
         '''.'''
         if response is not None:
             if self._configurations['simulate_delay']:
-                time.sleep(random.random() * (2 - 0) + 0)
+                time.sleep(random.random() * (0.2 - 0) + 0)
