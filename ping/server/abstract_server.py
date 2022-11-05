@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple
 import os
 import sys
 import datetime
@@ -71,30 +71,45 @@ class AbstractServer(ABC):
         :return None
         '''
         # receiving
-        byte_stream, received_address = self._connection.recvfrom(40)
+        byte_stream, received_address = self._connection.recvfrom(1024)
         address = f"{received_address[0]}:{received_address[1]}"
         self.emmit('RECV', f"package received from {address}")
         # responding
-        response: bytes = self._create_response(byte_stream)
+        response: bytes | None = self._create_response(byte_stream)
         if response is not None:
             self._response_socket.sendto(response, received_address)
 
     @staticmethod
     def _check_package_state(
-        sid: str, ptype: int, time: str, content: str
+        sid: str, ptype: str, time: str, content: str
     ) -> bool:
-        '''.'''
+        '''Check package consistency
+        :param sid - str, sequence number
+        :param ptype - char, 0 to ping and 1 to pong
+        :param time - str, timestamp
+        :param content - str, package content
+        :return True if it passes all integrity conditions, False otherwise
+        '''
         if not sid.isnumeric():
             AbstractServer.emmit('ERROR', 'Non numeric sequence number')
             return False
-        elif ptype != '0':
+        if ptype != '0':
             AbstractServer.emmit('ERROR', 'Received pong instead of ping')
+            return False
+        if not time.isnumeric():
+            AbstractServer.emmit('ERROR', 'Non numeric timestamp')
+            return False
+        if len(content) > 30:
+            AbstractServer.emmit('ERROR', 'Larger content than allowed')
             return False
         return True
 
     @staticmethod
     def _create_response(byte_stream: bytes) -> bytes | None:
-        '''.'''
+        '''Make a response to received package
+        :param byte_stream - bytes, package received
+        :return bytes if packet is consistent otherwise None
+        '''
         package = byte_stream.decode('ascii')
         sid, ptype, time, content = read_package(package)
         valid = AbstractServer._check_package_state(sid, ptype, time, content)
