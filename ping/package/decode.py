@@ -1,7 +1,7 @@
 from typing import Tuple
 
 
-def read_package(package: str) -> Tuple[int, int, int, str]:
+def read_package(package: str) -> Tuple[int, int, str, str]:
     '''Handle a standard-compliant package
     Unpack all package data into single variables
     :param package - str, packet decoded in ascii format
@@ -13,7 +13,7 @@ def read_package(package: str) -> Tuple[int, int, int, str]:
     '''
     id_sequence = int(package[:5])
     package_type = int(package[5])
-    timestamp = int(package[6:10])
+    timestamp = package[6:10]
     content = package[10:]
 
     return id_sequence, package_type, timestamp, content
