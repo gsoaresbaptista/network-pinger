@@ -93,12 +93,13 @@ class UDPClient(AbstractClient):
                 else:
                     AbstractClient.emmit('RECV', 'Reply received successfully')
                     # save the received package to compare
-                    self._received_package = (sid, ptype, time, content)
+                    current_time = get_timestamp()
+                    self._received_package = (sid, ptype, current_time, content)
 
-                    return float(get_timestamp()) - float(time)
+                    return float(current_time) - float(time)
         except TimeoutError:
             AbstractClient.emmit('ERROR', 'Timeout waiting for response')
             # save the last received package to compare
-            self._received_package = (sid, ptype, time, content)
+            self._received_package = ('0000', '0', '0000', 'TIMEOUTERROR')
 
             return None

@@ -87,15 +87,22 @@ class AbstractClient(ABC):
 
     def run(self) -> None:
         '''.'''
-        self.send_to_server()
-        rtt = self.wait_response()
+        for i in range(10):
+            self.send_to_server(str(i))
+            rtt = self.wait_response()
 
-        if self._csv is not None:
-            self._write_csv_list(
-                merge_alternatively(self._sent_package, self._received_package)
-            )
-            self._csv.write(f",{str(rtt)}\n")
-            self._csv.flush()
+            # fix rtt if timestamp exceeds limit
+            if rtt is not None and rtt < 0:
+                rtt += 10000.0
+
+            if self._csv is not None:
+                self._write_csv_list(
+                    merge_alternatively(
+                        self._sent_package, self._received_package
+                    )
+                )
+                self._csv.write(f",{str(rtt)}\n")
+                self._csv.flush()
 
         self.disconnect()
 
