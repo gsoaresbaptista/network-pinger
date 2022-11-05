@@ -2,17 +2,21 @@ import socket
 import random
 import string
 from typing import Dict
-from client.abstract_client import AbstractClient
 from package import create_package, read_package, check_package, get_timestamp
+from .abstract_client import AbstractClient
 
 
 class UDPClient(AbstractClient):
     '''UDP client implementation'''
 
     def __init__(
-        self, server_ip: str, server_port: int, timeout: float | int = 5
+        self,
+        server_ip: str,
+        server_port: int,
+        timeout: float | int = 5,
+        save_csv: bool = False,
     ) -> None:
-        super().__init__(server_ip, server_port, timeout)
+        super().__init__(server_ip, server_port, timeout, save_csv)
         self.emmit('INIT', 'UDP Client initialized')
         self.connect()
 
@@ -88,7 +92,13 @@ class UDPClient(AbstractClient):
                     AbstractClient.emmit('ERROR', str(message))
                 else:
                     AbstractClient.emmit('RECV', 'Reply received successfully')
+                    # save the received package to compare
+                    self._received_package = (sid, ptype, time, content)
+
                     return float(get_timestamp()) - float(time)
         except TimeoutError:
             AbstractClient.emmit('ERROR', 'Timeout waiting for response')
+            # save the last received package to compare
+            self._received_package = (sid, ptype, time, content)
+
             return None

@@ -3,7 +3,7 @@ import argparse
 from server import Server, UDPServer
 
 
-if __name__:
+if __name__ == '__main__':
     # arguments
     parser = argparse.ArgumentParser(
         usage="%(prog)s [OPTION]...",

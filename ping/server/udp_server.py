@@ -1,7 +1,8 @@
+import time
+import random
 import socket
 from typing import Dict, Tuple
 from server.abstract_server import AbstractServer
-from package import get_int_timestamp
 
 
 class UDPServer(AbstractServer):
@@ -70,6 +71,4 @@ class UDPServer(AbstractServer):
         '''.'''
         if response is not None:
             if self._configurations['simulate_delay']:
-                wait_time = 1000
-                while get_int_timestamp() - int(response[6:10]) < wait_time:
-                    continue
+                time.sleep(random.random() * (2 - 0) + 0)
