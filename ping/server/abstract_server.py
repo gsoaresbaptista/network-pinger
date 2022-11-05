@@ -81,7 +81,7 @@ class AbstractServer(ABC):
         valid, message = check_package(sid, ptype, time, content, True)
 
         if valid:
-            return create_package(sid, '1', content)
+            return create_package(sid, '1', content, time)
 
         AbstractServer.emmit('ERROR', str(message))
         return None

@@ -3,7 +3,7 @@ import random
 import string
 from typing import Dict
 from client.abstract_client import AbstractClient
-from package import create_package, read_package, check_package
+from package import create_package, read_package, check_package, get_timestamp
 
 
 class UDPClient(AbstractClient):
@@ -68,20 +68,32 @@ class UDPClient(AbstractClient):
         server_ip, server_port = self._server_address
         self.emmit('SENT', f"Message sent to server {server_ip}:{server_port}")
 
-    def wait_response(self) -> None:
+    def wait_response(self) -> float | None:
         '''.'''
         valid = False
 
-        while not valid:
-            response, _ = self._socket.recvfrom(1024)
-            sid, ptype, time, content = read_package(response.decode('ascii'))
-            valid, message = check_package(sid, ptype, time, content, False)
+        try:
+            while not valid:
+                print('esperando')
+                response, _ = self._socket.recvfrom(1024)
+                sid, ptype, time, content = read_package(
+                    response.decode('ascii')
+                )
+                valid, message = check_package(sid, ptype, time, content, False)
 
-            # compare received package with the last sent one
-            valid = sid == self._sent_package[0]
-            message = 'Sequence id is not the same'
+                # compare received package with the last sent one
+                valid = sid == self._sent_package[0]
+                message = 'Sequence id is not the same'
 
-            if not valid:
-                AbstractClient.emmit('ERROR', str(message))
-            else:
-                AbstractClient.emmit('RECV', 'Success in receiving the reply')
+                if not valid:
+                    AbstractClient.emmit('ERROR', str(message))
+                else:
+                    AbstractClient.emmit('RECV', 'Reply received successfully')
+                    print(
+                        float(time),
+                        float(get_timestamp()),
+                    )
+                    return float(get_timestamp()) - float(time)
+        except TimeoutError:
+            print('timeout')
+            return None

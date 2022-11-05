@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Tuple
+from typing import Tuple, List
 import os
 import datetime
 import socket
@@ -23,6 +23,10 @@ class AbstractClient(ABC):
         self._socket: socket.socket
         self._server_address = (server_ip, server_port)
         self._sent_package: Tuple[str, str, str, str]
+        self._sent = 0
+        self._lost = 0
+        self._total = 0
+        self._times: List[float] = []
 
     @abstractmethod
     def connect(self) -> None:
@@ -38,7 +42,7 @@ class AbstractClient(ABC):
         '''.'''
 
     @abstractmethod
-    def wait_response(self) -> None:
+    def wait_response(self) -> float | None:
         '''.'''
 
     @abstractmethod

@@ -9,7 +9,7 @@ def get_timestamp() -> str:
     :param None
     : return timestamp - int, last four digits of unix time
     '''
-    return str(round(time.time()))[-4:]
+    return str(round(time.time() * 1000))[-4:]
 
 
 def check_package(
