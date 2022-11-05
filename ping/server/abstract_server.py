@@ -4,6 +4,7 @@ import os
 import sys
 import datetime
 import socket
+from ping.package import create_package, read_package
 
 
 class AbstractServer(ABC):
@@ -59,33 +60,23 @@ class AbstractServer(ABC):
         :return None
         '''
         now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        print(f"{now} - {category:5} | {message}")
+        print(f"{now} - {category:4} | {message}")
 
     # private methods, using defined pattern for packages
-    def _handle_package(self, package: str) -> Tuple[int, int, int, str]:
-        '''Handle a standard-compliant package
-        Unpack all package data into single variables
-        :param package - str, packet decoded in ascii format
-        :return
-            - id_sequence - int, sequence number
-            - package_type - int, 0 if ping or 1 for pong
-            - timestamp - int, timestamp in seconds
-            - content - str, package content
-        '''
-        id_sequence = int(package[:5])
-        package_type = int(package[5])
-        timestamp = int(package[6:10])
-        content = package[10:]
-
-        return id_sequence, package_type, timestamp, content
-
     def _listen_one(self) -> None:
         '''Procedure to handle a packaged in the defined pattern.
         :param None
         :return None
         '''
-        byte_stream, received_address = self._connection.recvfrom(64)
+        byte_stream, received_address = self._connection.recvfrom(40)
         address = f"{received_address[0]}:{received_address[1]}"
+        self._create_response(byte_stream)
+        self.emmit('RECV', f"package received from {address}")
+
+    def _create_response(self, byte_stream: bytes) -> bytes:
+        '''.'''
         package = byte_stream.decode('ascii')
-        seq, req, timestamp, content = self._handle_package(package)
-        self.emmit('RECV', f"'{content}' received from {address}")
+        sid, ptype, time, content = read_package(package)
+        # TODO: Check if is ping
+        response = create_package(sid, 1, content)
+        return response
