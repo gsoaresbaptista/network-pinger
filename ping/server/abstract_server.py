@@ -78,11 +78,10 @@ class AbstractServer(ABC):
         '''
         package = byte_stream.decode('ascii')
         sid, ptype, time, content = read_package(package)
-        valid, message = check_package(sid, ptype, time, content)
-        response: bytes = create_package(sid, '1', content)
+        valid, message = check_package(sid, ptype, time, content, True)
 
         if valid:
-            return response
+            return create_package(sid, '1', content)
 
-        AbstractServer.emmit('ERROR', message)
+        AbstractServer.emmit('ERROR', str(message))
         return None

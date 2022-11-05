@@ -3,7 +3,7 @@ import random
 import string
 from typing import Dict
 from client.abstract_client import AbstractClient
-from package import create_package, read_package
+from package import create_package, read_package, check_package
 
 
 class UDPClient(AbstractClient):
@@ -70,5 +70,17 @@ class UDPClient(AbstractClient):
 
     def wait_response(self) -> None:
         '''.'''
-        response, _ = self._socket.recvfrom(1024)
-        print(read_package(response.decode('ascii')))
+        valid = False
+
+        while not valid:
+            response, _ = self._socket.recvfrom(1024)
+            sid, ptype, time, content = read_package(response.decode('ascii'))
+            valid, message = check_package(sid, ptype, time, content, False)
+
+            # compare received package with the last sent one
+            valid = sid == self._sent_package[0]
+
+            if not valid:
+                AbstractClient.emmit('ERROR', str(message))
+            else:
+                AbstractClient.emmit('RECV', 'Success in receiving the reply')
