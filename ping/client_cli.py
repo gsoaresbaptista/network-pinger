@@ -1,4 +1,5 @@
 import argparse
+import sys
 from client import UDPClient
 
 
@@ -32,7 +33,15 @@ if __name__ == '__main__':
     )
     args = parser.parse_args()
 
+    # stdout change
+    if args.logger:
+        previous = sys.stdout
+        sys.stdout = open('client_log.txt', 'a', encoding='utf8')
+
     client = UDPClient('127.0.0.1', 3000, int(args.timeout), args.csv)
     client.run()
-    # client.send_to_server()
-    # client.wait_response()
+
+    # revert stdout change
+    if args.logger:
+        sys.stdout.close()
+        sys.stdout = previous

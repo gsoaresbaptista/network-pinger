@@ -3,5 +3,6 @@
 **/.vscode
 **/.mypy_cache
 **/__local__.**
-**/log.txt
+**/client_log.txt
+**/server_log.txt
 **/packages_data.csv

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Tuple, List
 import os
+import sys
 import datetime
 import socket
 from io import TextIOWrapper
@@ -104,6 +105,8 @@ class AbstractClient(ABC):
                 self._csv.write(f",{str(rtt)}\n")
                 self._csv.flush()
 
+            # force emmits to stdout
+            sys.stdout.flush()
         self.disconnect()
 
         if self._csv is not None:

@@ -80,6 +80,7 @@ class AbstractServer(ABC):
                     f"response sent to {f'{address[0]}:{address[1]}'}",
                 )
 
+                # force emmits to stdout
                 sys.stdout.flush()
         except KeyboardInterrupt:
             self.disconnect()

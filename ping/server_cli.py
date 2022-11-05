@@ -23,7 +23,7 @@ if __name__ == '__main__':
     # stdout change
     if args.logger:
         previous = sys.stdout
-        sys.stdout = open('log.txt', 'a', encoding='utf8')
+        sys.stdout = open('server_log.txt', 'a', encoding='utf8')
 
     # server run
     server: Server = UDPServer()
