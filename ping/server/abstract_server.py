@@ -4,7 +4,7 @@ import os
 import sys
 import datetime
 import socket
-from package import create_package, read_package
+from package import create_package, read_package, check_package
 
 
 class AbstractServer(ABC):
@@ -71,31 +71,6 @@ class AbstractServer(ABC):
         print(f"{now} - {category:5} | {message}")
 
     @staticmethod
-    def _check_package_state(
-        sid: str, ptype: str, time: str, content: str
-    ) -> bool:
-        '''Check package consistency
-        :param sid - str, sequence number
-        :param ptype - char, 0 to ping and 1 to pong
-        :param time - str, timestamp
-        :param content - str, package content
-        :return True if it passes all integrity conditions, False otherwise
-        '''
-        if not sid.isnumeric():
-            AbstractServer.emmit('ERROR', 'Non numeric sequence number')
-            return False
-        if ptype != '0':
-            AbstractServer.emmit('ERROR', 'Received pong instead of ping')
-            return False
-        if not time.isnumeric():
-            AbstractServer.emmit('ERROR', 'Non numeric timestamp')
-            return False
-        if len(content) > 30:
-            AbstractServer.emmit('ERROR', 'Larger content than allowed')
-            return False
-        return True
-
-    @staticmethod
     def _create_response(byte_stream: bytes) -> bytes | None:
         '''Make a response to received package
         :param byte_stream - bytes, package received
@@ -103,6 +78,11 @@ class AbstractServer(ABC):
         '''
         package = byte_stream.decode('ascii')
         sid, ptype, time, content = read_package(package)
-        valid = AbstractServer._check_package_state(sid, ptype, time, content)
+        valid, message = check_package(sid, ptype, time, content)
         response: bytes = create_package(sid, '1', content)
-        return response if valid else None
+
+        if valid:
+            return response
+
+        AbstractServer.emmit('ERROR', message)
+        return None
