@@ -59,11 +59,7 @@ class UDPServer(AbstractServer):
         :param None
         :return None
         '''
-        # receiving
         byte_stream, received_address = self._connection.recvfrom(1024)
-        address = f"{received_address[0]}:{received_address[1]}"
-        self.emmit('RECV', f"package received from {address}")
-        # responding
         response: bytes | None = self._create_response(byte_stream)
         return response, received_address
 

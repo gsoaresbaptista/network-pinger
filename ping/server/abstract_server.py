@@ -64,8 +64,22 @@ class AbstractServer(ABC):
         try:
             while running:
                 response, address = self._listen_one()
+
+                # emmit received
+                self.emmit(
+                    'RECV',
+                    f"package received from {f'{address[0]}:{address[1]}'}",
+                )
+
                 self._simulations(response)
                 self._send_reply(response, address)
+
+                # emmit sent
+                self.emmit(
+                    'SENT',
+                    f"response sent to {f'{address[0]}:{address[1]}'}",
+                )
+
                 sys.stdout.flush()
         except KeyboardInterrupt:
             self.disconnect()
