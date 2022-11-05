@@ -16,11 +16,14 @@ class UDPServer(AbstractServer):
         :param server_pot - int, port to host server
         :return None
         '''
+        # creating socket to receive
         self._address = (server_ip, server_port)
         self._connection = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self._connection.settimeout(self._timeout)
         self._connection.bind(self._address)
-        self.emmit('INIT', f"Running on {server_ip}:{server_port}")
+        self.emmit('INIT', f"Listen packages on {server_ip}:{server_port}")
+        # creating socket to send
+        self._response_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.emmit('INIT', 'Response socket created')
 
     def disconnect(self) -> None:
         '''Close server connection.
@@ -28,6 +31,7 @@ class UDPServer(AbstractServer):
         :return None
         '''
         self._connection.close()
+        self._response_socket.close()
         self.emmit('END', 'Server connection closed')
 
     def check(self) -> Dict[str, int | float | str]:

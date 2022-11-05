@@ -4,7 +4,7 @@ import os
 import sys
 import datetime
 import socket
-from ping.package import create_package, read_package
+from package import create_package, read_package
 
 
 class AbstractServer(ABC):
@@ -17,6 +17,7 @@ class AbstractServer(ABC):
         self._address: Tuple[str, int]
         self._connection: socket.socket
         self._timeout = timeout
+        self._response_socket: socket.socket
 
     @abstractmethod
     def connect(self, server_ip: str, server_port: int) -> None:
@@ -68,15 +69,18 @@ class AbstractServer(ABC):
         :param None
         :return None
         '''
+        # receiving
         byte_stream, received_address = self._connection.recvfrom(40)
         address = f"{received_address[0]}:{received_address[1]}"
-        self._create_response(byte_stream)
         self.emmit('RECV', f"package received from {address}")
+        # responding
+        response: bytes = self._create_response(byte_stream)
+        self._response_socket.sendto(response, received_address)
 
     def _create_response(self, byte_stream: bytes) -> bytes:
         '''.'''
         package = byte_stream.decode('ascii')
         sid, ptype, time, content = read_package(package)
         # TODO: Check if is ping
-        response = create_package(sid, 1, content)
+        response: bytes = create_package(sid, 1, content)
         return response
