@@ -8,6 +8,7 @@ import socket
 from io import TextIOWrapper
 from statistics import mean, stdev
 from utils import merge_alternatively, join_list
+from packet import read_packet
 
 
 class AbstractClient(ABC):
@@ -115,7 +116,18 @@ class AbstractClient(ABC):
             self.emmit('SENT', f"Message sent to server {address}")
 
             # wait for server response
-            rtt = self.wait_response()
+            seqid = None
+            wait_time = time.time()
+
+            while seqid != i:
+                # check timeout
+                if time.time() - wait_time >= self._timeout:
+                    rtt = None
+                    self._received_packet = ('00000', '0', '0000', 'TIMEOUTERROR')
+                    break
+                # get new package
+                rtt = self.wait_response()
+                seqid = int(self._received_packet[0])
 
             if rtt is not None:
                 # fix rtt if timestamp exceeds limit
