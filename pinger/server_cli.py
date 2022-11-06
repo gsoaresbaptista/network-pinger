@@ -20,7 +20,7 @@ if __name__ == '__main__':
         "--timeout",
         help=('Set how long to wait for a client to receive a ' 'response before receiving a timeout, in seconds.'),
         action='store',
-        default=1,
+        default=10,
     )
     parser.add_argument(
         "-sd",
