@@ -77,9 +77,9 @@ We got the following output files:
 ```
 2022-11-06 00:46:54 - INIT  | UDP Server initialized
 ------------------------------------------------------------
-2022-11-06 00:46:54 - CONFG | Setting simulate_delay set as True
-2022-11-06 00:46:54 - CONFG | Setting simulate_loss set as True
-2022-11-06 00:46:54 - CONFG | Setting simulate_protocol_error set as True
+2022-11-06 00:46:54 - CONFG | simulate_delay set as True
+2022-11-06 00:46:54 - CONFG | simulate_loss set as True
+2022-11-06 00:46:54 - CONFG | simulate_protocol_error set as True
 ------------------------------------------------------------
 2022-11-06 00:46:54 - INIT  | Listen packets on 127.0.0.1:3000
 2022-11-06 00:46:54 - INIT  | Response socket created

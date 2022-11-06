@@ -116,7 +116,7 @@ class AbstractServer(ABC):
         '''
         print('-' * 60)
         for key, value in self._settings.items():
-            self.emmit('CONFG', f'Setting {key} set as {value}')
+            self.emmit('CONFG', f'{key} set as {value}')
         print('-' * 60)
 
     @staticmethod
