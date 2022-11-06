@@ -28,8 +28,9 @@ Some parameters can be passed to  both cli, to see more about this add ```--help
 ## Simulations
 
 The server can simulate a few possible fauls, such as:
-- Delayed response: Wait min 10ms and max 200ms to send the response
-- Packet loss: Response packet is not sent to client with 25% chance
+- Delayed response: Wait min **10ms** and max **200ms** to send the response
+- Packet loss: Response packet is not sent to client with **25%** chance
+- Packet protocol errors: Add a protocol error to packet with **25%** chance
 
 The client handles the failures simulated by the server, considering them when calculating the statistics. All simulations must be enabled if desired as they are disabled by default.
 
@@ -40,11 +41,12 @@ Some parameters can be passed to the server cli to change certain behaviors. Are
 - ```-t NUMBER``` or ```--timeout NUMBER```: The server stops after **NUMBER** seconds with no requests.
 - ```-sd``` or ```--simulate_delay```: The server allows packet delay response simulation.
 - ```-sl``` or ```--simulate_loss```: The server allows packet loss simulation.
+- ```-sp``` or ```--simulate_protocol_error```: The server allows packet protocol errors simulation.
 
 
 An example to run a server cli with parameters is:
 
-```python pinger/server_cli.py -t 2 -sd -sl```
+```python pinger/server_cli.py -t 2 -sd -sl -sp```
 
 Server running with a timeout of 2 seconds and simulating delay and loss.
 
@@ -65,90 +67,73 @@ An example to run a client cli with parameters is:
 
 Running the following commands in separate terminals:
 
-```python pinger/server_cli.py -t 3 -sd -sl -l```
+```python pinger/server_cli.py -t 3 -sd -sl -sp -l```
 
-```python pinger/client_cli.py --timeout 1 --csv --logger```
+```python pinger/client_cli.py --packets 5 --timeout 1 --csv --logger```
 
 We got the following output files:
 
 **server_log.txt:**
 ```
-2022-11-05 23:06:46 - INIT  | UDP Server initialized
+2022-11-06 00:46:54 - INIT  | UDP Server initialized
 ------------------------------------------------------------
-2022-11-05 23:06:46 - CONFG | Setting simulate_delay set as True
-2022-11-05 23:06:46 - CONFG | Setting simulate_loss set as True
+2022-11-06 00:46:54 - CONFG | Setting simulate_delay set as True
+2022-11-06 00:46:54 - CONFG | Setting simulate_loss set as True
+2022-11-06 00:46:54 - CONFG | Setting simulate_protocol_error set as True
 ------------------------------------------------------------
-2022-11-05 23:06:46 - INIT  | Listen packets on 127.0.0.1:3000
-2022-11-05 23:06:46 - INIT  | Response socket created
-2022-11-05 23:06:46 - INFO  | Set 3 seconds as maximum no-request time
-2022-11-05 23:06:47 - RECV  | packet received from 127.0.0.1:40468
-2022-11-05 23:06:47 - SENT  | response sent to 127.0.0.1:40468
-2022-11-05 23:06:48 - RECV  | packet received from 127.0.0.1:40468
-2022-11-05 23:06:48 - SENT  | response sent to 127.0.0.1:40468
-2022-11-05 23:06:48 - RECV  | packet received from 127.0.0.1:40468
-2022-11-05 23:06:48 - SENT  | response sent to 127.0.0.1:40468
-2022-11-05 23:06:48 - RECV  | packet received from 127.0.0.1:40468
-2022-11-05 23:06:48 - SENT  | response sent to 127.0.0.1:40468
-2022-11-05 23:06:49 - RECV  | packet received from 127.0.0.1:40468
-2022-11-05 23:06:49 - SENT  | response sent to 127.0.0.1:40468
-2022-11-05 23:06:49 - RECV  | packet received from 127.0.0.1:40468
-2022-11-05 23:06:50 - SENT  | response sent to 127.0.0.1:40468
-2022-11-05 23:06:50 - RECV  | packet received from 127.0.0.1:40468
-2022-11-05 23:06:50 - SENT  | response sent to 127.0.0.1:40468
-2022-11-05 23:06:50 - RECV  | packet received from 127.0.0.1:40468
-2022-11-05 23:06:50 - SENT  | response sent to 127.0.0.1:40468
-2022-11-05 23:06:50 - RECV  | packet received from 127.0.0.1:40468
-2022-11-05 23:06:50 - SENT  | response sent to 127.0.0.1:40468
-2022-11-05 23:06:53 - ERROR | Maximum no-request time of 3 seconds exceeded
-2022-11-05 23:06:53 - END   | Server connection closed
+2022-11-06 00:46:54 - INIT  | Listen packets on 127.0.0.1:3000
+2022-11-06 00:46:54 - INIT  | Response socket created
+2022-11-06 00:46:54 - INFO  | Set 3 seconds as maximum no-request time
+2022-11-06 00:46:55 - RECV  | packet received from 127.0.0.1:46239
+2022-11-06 00:46:55 - INFO  | Simulating packet delay with 66.66ms
+2022-11-06 00:46:55 - SENT  | response sent to 127.0.0.1:46239
+2022-11-06 00:46:55 - RECV  | packet received from 127.0.0.1:46239
+2022-11-06 00:46:55 - INFO  | Simulating packet ping/pong error
+2022-11-06 00:46:55 - INFO  | Simulating packet delay with 160.68ms
+2022-11-06 00:46:55 - SENT  | response sent to 127.0.0.1:46239
+2022-11-06 00:46:55 - RECV  | packet received from 127.0.0.1:46239
+2022-11-06 00:46:55 - INFO  | Simulating packet loss
+2022-11-06 00:46:56 - RECV  | packet received from 127.0.0.1:46239
+2022-11-06 00:46:57 - INFO  | Simulating packet delay with 182.56ms
+2022-11-06 00:46:57 - SENT  | response sent to 127.0.0.1:46239
+2022-11-06 00:46:57 - RECV  | packet received from 127.0.0.1:46239
+2022-11-06 00:46:57 - INFO  | Simulating packet delay with 147.01ms
+2022-11-06 00:46:57 - SENT  | response sent to 127.0.0.1:46239
+2022-11-06 00:47:00 - ERROR | Maximum no-request time of 3 seconds exceeded
+2022-11-06 00:47:00 - END   | Server connection closed
 ```
 
 **client_log.txt:**
 ```
-2022-11-05 23:06:46 - INIT  | UDP Client initialized
-2022-11-05 23:06:46 - INIT  | Socket created
-2022-11-05 23:06:46 - SENT  | Message sent to server 127.0.0.1:3000
-2022-11-05 23:06:47 - ERROR | Timeout waiting for response, packet was lost
-2022-11-05 23:06:47 - SENT  | Message sent to server 127.0.0.1:3000
-2022-11-05 23:06:48 - ERROR | Timeout waiting for response, packet was lost
-2022-11-05 23:06:48 - SENT  | Message sent to server 127.0.0.1:3000
-2022-11-05 23:06:48 - RECV  | Reply received successfully, rtt = 173ms
-2022-11-05 23:06:48 - SENT  | Message sent to server 127.0.0.1:3000
-2022-11-05 23:06:48 - RECV  | Reply received successfully, rtt = 112ms
-2022-11-05 23:06:48 - SENT  | Message sent to server 127.0.0.1:3000
-2022-11-05 23:06:49 - ERROR | Timeout waiting for response, packet was lost
-2022-11-05 23:06:49 - SENT  | Message sent to server 127.0.0.1:3000
-2022-11-05 23:06:49 - RECV  | Reply received successfully, rtt = 145ms
-2022-11-05 23:06:49 - SENT  | Message sent to server 127.0.0.1:3000
-2022-11-05 23:06:50 - RECV  | Reply received successfully, rtt = 87ms
-2022-11-05 23:06:50 - SENT  | Message sent to server 127.0.0.1:3000
-2022-11-05 23:06:50 - RECV  | Reply received successfully, rtt = 115ms
-2022-11-05 23:06:50 - SENT  | Message sent to server 127.0.0.1:3000
-2022-11-05 23:06:50 - RECV  | Reply received successfully, rtt = 70ms
-2022-11-05 23:06:50 - SENT  | Message sent to server 127.0.0.1:3000
-2022-11-05 23:06:51 - ERROR | Timeout waiting for response, packet was lost
+2022-11-06 00:46:55 - INIT  | UDP Client initialized
+2022-11-06 00:46:55 - INIT  | Socket created
+2022-11-06 00:46:55 - SENT  | Message sent to server 127.0.0.1:3000
+2022-11-06 00:46:55 - RECV  | Reply received successfully, rtt = 67ms
+2022-11-06 00:46:55 - SENT  | Message sent to server 127.0.0.1:3000
+2022-11-06 00:46:55 - ERROR | Ping-pong received incorrectly
+2022-11-06 00:46:55 - SENT  | Message sent to server 127.0.0.1:3000
+2022-11-06 00:46:56 - ERROR | Timeout waiting for response, packet was lost
+2022-11-06 00:46:56 - SENT  | Message sent to server 127.0.0.1:3000
+2022-11-06 00:46:57 - RECV  | Reply received successfully, rtt = 184ms
+2022-11-06 00:46:57 - SENT  | Message sent to server 127.0.0.1:3000
+2022-11-06 00:46:57 - RECV  | Reply received successfully, rtt = 147ms
 ----------------------------------------------------------------------
-2022-11-05 23:06:51 - INFO  | Total time = 4.7056 seconds
-2022-11-05 23:06:51 - INFO  | 10 packets transmitted, 6 received.
-2022-11-05 23:06:51 - INFO  | 40.00% packet loss.
-2022-11-05 23:06:51 - INFO  | rtt min/avg/max/mdev = 70.000/117.000/173.000/37.571 ms
+2022-11-06 00:46:57 - INFO  | Total time = 1.5608 seconds
+2022-11-06 00:46:57 - INFO  | 5 packets transmitted, 3 received.
+2022-11-06 00:46:57 - INFO  | 40.00% packet loss.
+2022-11-06 00:46:57 - INFO  | rtt min/avg/max/mdev = 67.000/132.667/184.000/59.802 ms
 ----------------------------------------------------------------------
-2022-11-05 23:06:51 - END   | Client socket closed
+2022-11-06 00:46:57 - END   | Client socket closed
 ```
 
 **packets_data.csv:**
 ```
 sid_sent,sid_received,type_sent,type_received,timestamp_sent,timestamp_received,message_sent,message_received,rtt
-00000,0000,0,0,6560,0000,p,TIMEOUTERROR,None
-00001,0000,0,0,7560,0000,dofkrw,TIMEOUTERROR,None
-00002,00002,0,1,8561,8734,gcwuubkigyacutawyolpeijd,gcwuubkigyacutawyolpeijd,173.0
-00003,00003,0,1,8734,8846,ty,ty,112.0
-00004,0000,0,0,8846,0000,vcitufrtxzfgjjxwuyvrmwnqyhstz,TIMEOUTERROR,None
-00005,00005,0,1,9847,9992,sgiiudamqqgcjebwpfdljopjlnj,sgiiudamqqgcjebwpfdljopjlnj,145.0
-00006,00006,0,1,9992,0079,zegmbchnidqhrbprzhigqfbc,zegmbchnidqhrbprzhigqfbc,87.0
-00007,00007,0,1,0079,0194,dfsdlxewcwsttreeqobk,dfsdlxewcwsttreeqobk,115.0
-00008,00008,0,1,0194,0264,yxwtkdpmptadohhslcxpiqyaoxfj,yxwtkdpmptadohhslcxpiqyaoxfj,70.0
-00009,0000,0,0,0264,0000,fitwyaqoayqmzzooweaecczezgzljv,TIMEOUTERROR,None
+00000,00000,0,1,5588,5655,wlnpnixkcqrtyudmib,wlnpnixkcqrtyudmib,67.0
+00001,00000,0,1,5655,5655,mkuisdfpt,wlnpnixkcqrtyudmib,None
+00002,0000,0,0,5816,0000,dwvtgkbzalpopif,TIMEOUTERROR,None
+00003,00003,0,1,6817,7001,rtdigzvwxowvdrvjqozoav,rtdigzvwxowvdrvjqozoav,184.0
+00004,00004,0,1,7001,7148,nvqvthszkpgfyo,nvqvthszkpgfyo,147.0
 ```
 
 Note that when a packet is lost the timestamp is **'0000'**, type_received **'0'** and the rtt **None**.

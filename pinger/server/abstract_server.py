@@ -90,10 +90,11 @@ class AbstractServer(ABC):
                 self._send_reply(response, address)
 
                 # emmit sent
-                self.emmit(
-                    'SENT',
-                    f"response sent to {f'{address[0]}:{address[1]}'}",
-                )
+                if response is not None:
+                    self.emmit(
+                        'SENT',
+                        f"response sent to {f'{address[0]}:{address[1]}'}",
+                    )
 
                 # force emmits to stdout
                 sys.stdout.flush()
