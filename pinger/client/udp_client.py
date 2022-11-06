@@ -90,6 +90,7 @@ class UDPClient(AbstractClient):
 
                 if not valid:
                     AbstractClient.emmit('ERROR', str(message))
+                    self._received_packet = ('0000', '0', '0000', 'ERROR')
                     return None
                 else:
                     # save the received packet to compare
