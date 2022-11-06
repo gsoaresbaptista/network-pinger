@@ -50,7 +50,11 @@ class UDPClient(AbstractClient):
         }
 
     def send_to_server(self, seqid: str = '0', message: str | None = None) -> Tuple[str, int]:
-        '''.'''
+        '''Send a packet to connected server.
+        :param seqid - str, sequence number
+        :param message - str or None, if None a random message is generated
+        :return server_address - Tuple[str, int], server_address, server_port
+        '''
         # generate message
         if message is None:
             content_size = random.randint(1, 30)
@@ -66,7 +70,10 @@ class UDPClient(AbstractClient):
         return self._server_address
 
     def wait_response(self) -> float | None:  # type: ignore
-        '''.'''
+        '''Make client wait for a response from the server.
+        :param None
+        :return None
+        '''
         valid = False
 
         try:

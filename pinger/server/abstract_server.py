@@ -55,10 +55,18 @@ class AbstractServer(ABC):
 
     @abstractmethod
     def _send_reply(self, reply: bytes | None, address: Tuple[str, int]) -> None:
-        '''.'''
+        '''Send a response to a client requisition.
+        :param reply - bytes, received requisition
+        :param address - Tuple[str, int], server address and server port
+        :return None
+        '''
 
     def set_setting(self, key: str, value: int | float | str | bool) -> None:
-        '''.'''
+        '''Set a server setting to a new value provided.
+        :param key - str, parameter to change
+        :param value - int | float | str | bool, new parameter value
+        :return None
+        '''
         self._settings[key] = value
 
     def listen(self) -> None:
@@ -99,7 +107,12 @@ class AbstractServer(ABC):
             self.disconnect()
 
     def emmit_setting(self) -> None:
-        '''.'''
+        '''Emmit a server setting to stdout.
+
+        Print all server settings in the configured stdout.
+        :param None
+        :return None
+        '''
         print('-' * 60)
         for key, value in self._settings.items():
             self.emmit('CONFG', f'Setting {key} set as {value}')
@@ -131,4 +144,7 @@ class AbstractServer(ABC):
         return None
 
     def _simulations(self, response: bytes | None) -> bytes | None:
-        '''.'''
+        '''Compute all simulations that are enabled.
+        :param response - bytes, response packet, passed to change in simulations
+        :return bytes | none, new response packet
+        '''

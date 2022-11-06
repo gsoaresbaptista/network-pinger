@@ -50,11 +50,18 @@ class AbstractClient(ABC):
 
     @abstractmethod
     def send_to_server(self, seqid: str = '0', message: str | None = None) -> Tuple[str, int]:
-        '''.'''
+        '''Send a packet to connected server.
+        :param seqid - str, sequence number
+        :param message - str or None, if None a random message is generated
+        :return server_address - Tuple[str, int], server_address, server_port
+        '''
 
     @abstractmethod
     def wait_response(self) -> float | None:
-        '''.'''
+        '''Make client wait for a response from the server.
+        :param None
+        :return None
+        '''
 
     @abstractmethod
     def disconnect(self) -> None:
@@ -73,7 +80,10 @@ class AbstractClient(ABC):
         print(f"{now} - {category:5} | {message}")
 
     def _create_csv(self, save_csv: bool) -> None:
-        '''.'''
+        '''Create the csv file with sent and received packets and rtt data.
+        :param save_csv - bool, True if yout want create a csv file, otherwise False
+        :return None
+        '''
 
         if save_csv:
             self._csv = open('packets_data.csv', 'w', encoding='utf8')
@@ -88,7 +98,12 @@ class AbstractClient(ABC):
             self._csv = None
 
     def run(self) -> None:
-        '''.'''
+        '''Run client pipeline.
+
+        Make server send a message to the connected server and wait for a valid response.
+        :param None
+        :return None
+        '''
         for i in range(10):
             server_ip, server_port = self.send_to_server(str(i))
             address = f"{server_ip}:{server_port}"
@@ -126,7 +141,10 @@ class AbstractClient(ABC):
             self._csv.close()
 
     def _summary(self) -> None:
-        '''.'''
+        '''Emmit the summary with some statistics about the packets sent and received.
+        :param None
+        :return None
+        '''
         rtt_min = min(self._rtts)
         rtt_avg = mean(self._rtts)
         rtt_max = max(self._rtts)
@@ -140,10 +158,18 @@ class AbstractClient(ABC):
         print('-' * 70)
 
     def _write_csv_list(self, line: List[str]) -> None:
-        '''.'''
+        '''Trick to write list in csv file.
+
+        Note that each items in the list is a specific column in csv.
+        :param line - List[str], list with string data to write in csv file
+        :return None
+        '''
         if self._csv is not None:
             self._csv.write(','.join(line))
 
     def emmit_info(self, message: str) -> None:
-        '''.'''
+        '''Trick to emmit a info message
+        :param message - str, message to print in stdout
+        :return None
+        '''
         self.emmit('INFO', message)

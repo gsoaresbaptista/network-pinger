@@ -53,7 +53,11 @@ class UDPServer(AbstractServer):
         }
 
     def _send_reply(self, reply: bytes | None, address: Tuple[str, int]) -> None:
-        '''.'''
+        '''Send a response to a client requisition.
+        :param reply - bytes, received requisition
+        :param address - Tuple[str, int], server address and server port
+        :return None
+        '''
         if reply is not None:
             self._response_socket.sendto(reply, address)
 
@@ -67,7 +71,10 @@ class UDPServer(AbstractServer):
         return response, received_address
 
     def _simulations(self, response: bytes | None) -> bytes | None:
-        '''.'''
+        '''Compute all simulations that are enabled.
+        :param response - bytes, response packet, passed to change in simulations
+        :return bytes | none, new response packet
+        '''
         new_response = response
 
         if response is not None:
