@@ -22,6 +22,7 @@ class AbstractServer(ABC):
         self._response_socket: socket.socket
         self._configurations: Dict[str, bool | int | float | str] = {}
         self._timeout = timeout
+        self._settings = {'simulate_delay': False, 'simulate_loss': False}
 
     @abstractmethod
     def connect(self, server_ip: str, server_port: int) -> None:
@@ -56,6 +57,10 @@ class AbstractServer(ABC):
     def _send_reply(self, reply: bytes | None, address: Tuple[str, int]) -> None:
         '''.'''
 
+    def set_setting(self, key: str, value: int | float | str | bool) -> None:
+        '''.'''
+        self._settings[key] = value
+
     def listen(self) -> None:
         '''Makes the server listen and expect to receive some data.
         :param None
@@ -73,7 +78,7 @@ class AbstractServer(ABC):
                     f"packet received from {f'{address[0]}:{address[1]}'}",
                 )
 
-                self._simulations(response)
+                response = self._simulations(response)
                 self._send_reply(response, address)
 
                 # emmit sent
@@ -92,6 +97,13 @@ class AbstractServer(ABC):
                 f'Maximum no-request time of {self._timeout} seconds exceeded',
             )
             self.disconnect()
+
+    def emmit_setting(self) -> None:
+        '''.'''
+        print('-' * 60)
+        for key, value in self._settings.items():
+            self.emmit('CONFG', f'Setting {key} set as {value}')
+        print('-' * 60)
 
     @staticmethod
     def emmit(category: str, message: str) -> None:
@@ -118,5 +130,5 @@ class AbstractServer(ABC):
         AbstractServer.emmit('ERROR', str(message))
         return None
 
-    def _simulations(self, response: bytes | None) -> None:
+    def _simulations(self, response: bytes | None) -> bytes | None:
         '''.'''

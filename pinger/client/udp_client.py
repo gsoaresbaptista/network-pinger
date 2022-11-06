@@ -13,7 +13,7 @@ class UDPClient(AbstractClient):
         self,
         server_ip: str,
         server_port: int,
-        timeout: float | int = 5,
+        timeout: float | int,
         save_csv: bool = False,
     ) -> None:
         super().__init__(server_ip, server_port, timeout, save_csv)
@@ -87,7 +87,6 @@ class UDPClient(AbstractClient):
                     self._received_packet = (sid, ptype, current_time, content)
                     return float(current_time) - float(time)
         except TimeoutError:
-            AbstractClient.emmit('ERROR', 'Timeout waiting for response')
             # save the last received packet to compare
             self._received_packet = ('0000', '0', '0000', 'TIMEOUTERROR')
 

@@ -109,7 +109,7 @@ class AbstractClient(ABC):
                     f'Reply received successfully, rtt = {int(rtt)}ms',
                 )
             else:
-                self.emmit('ERROR', 'packet was lost')
+                self.emmit('ERROR', 'Timeout waiting for response, packet was lost')
 
             if self._csv is not None:
                 self._write_csv_list(merge_alternatively(self._sent_packet, self._received_packet))

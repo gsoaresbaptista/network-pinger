@@ -10,11 +10,10 @@ class UDPServer(AbstractServer):
 
     def __init__(
         self,
-        timeout: float | int = 5,
+        timeout: float | int,
     ) -> None:
         super().__init__(timeout)
         self.emmit('INIT', 'UDP Server initialized')
-        self._configurations = {'simulate_delay': True}
 
     def connect(self, server_ip: str, server_port: int) -> None:
         '''Hosts server on server_ip on server_port.
@@ -67,8 +66,15 @@ class UDPServer(AbstractServer):
         response: bytes | None = self._create_response(byte_stream)
         return response, received_address
 
-    def _simulations(self, response: bytes | None) -> None:
+    def _simulations(self, response: bytes | None) -> bytes | None:
         '''.'''
+        new_response = response
+
         if response is not None:
-            if self._configurations['simulate_delay']:
-                time.sleep(random.random() * (0.2 - 0) + 0)
+            if self._settings.get('simulate_delay', False):
+                time.sleep(random.random() * (0.2 - 0.01) + 0.01)
+            if self._settings.get('simulate_loss', False):
+                if random.random() >= 0.75:
+                    new_response = None
+
+        return new_response
