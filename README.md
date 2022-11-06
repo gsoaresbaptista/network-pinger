@@ -57,7 +57,7 @@ The client can receive parameters below by command line:
 - ```-l``` or ```--logger```: The client saves all stdout output in the client_log.txt file.
 - ```-t NUMBER``` or ```--timeout NUMBER```: The client will consider the packet lost after waiting for **NUMBER** seconds.
 - ```-c``` or ```--csv```: The client saves all sent and received packet data in the packets_data.csv file.
--  ```-p``` or ```--packets```: Number of packets that the client will send to the server.
+-  ```-p NUMBER``` or ```--packets NUMBER```: The client will send **NUMBER** packets to the server.
 
 An example to run a client cli with parameters is:
 
