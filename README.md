@@ -136,4 +136,4 @@ sid_sent,sid_received,type_sent,type_received,timestamp_sent,timestamp_received,
 00004,00004,0,1,7001,7148,nvqvthszkpgfyo,nvqvthszkpgfyo,147.0
 ```
 
-Note that when a packet is lost the timestamp is **'0000'**, type_received **'0'** and the rtt **None**.
+Note that when a packet is lost the sid is **'00000'**, timestamp **'0000'**, type_received **'0'** and the rtt **None**.
