@@ -1,9 +1,6 @@
-import time
-import random
 import socket
-from typing import Dict, Tuple
+from typing import Tuple
 from server.abstract_server import AbstractServer
-from packet import read_packet, create_packet
 
 
 class UDPServer(AbstractServer):
@@ -43,16 +40,6 @@ class UDPServer(AbstractServer):
         self._response_socket.close()
         self.emmit('END', 'Server connection closed')
 
-    def check(self) -> Dict[str, int | float | str]:
-        '''Return server state.
-        :param None
-        :return None
-        '''
-        return {
-            'server_ip': self._address[0],
-            'server_port': self._address[1],
-        }
-
     def _send_reply(self, reply: bytes | None, address: Tuple[str, int]) -> None:
         '''Send a response to a client requisition.
         :param reply - bytes, received requisition
@@ -65,41 +52,8 @@ class UDPServer(AbstractServer):
     def _listen_one(self) -> Tuple[bytes | None, Tuple[str, int]]:
         '''Procedure to handle a packetd in the defined pattern.
         :param None
-        :return None
+        :return Tuple[str, int] - Tuple with response packet and client address
         '''
         byte_stream, received_address = self._connection.recvfrom(1024)
         response: bytes | None = self._create_response(byte_stream)
         return response, received_address
-
-    def _simulations(self, response: bytes | None) -> bytes | None:
-        '''Compute all simulations that are enabled.
-        :param response - bytes, response packet, passed to change in simulations
-        :return bytes | none, new response packet
-        '''
-        packet = read_packet(response.decode('ascii'))
-
-        if response is not None:
-            # Loss simulation
-            if self._settings.get('simulate_loss', False):
-                if random.random() >= 0.75:
-                    self.emmit('INFO', f'Simulating packet loss')
-                    return None
-
-            # Protocol errors simultion
-            if self._settings.get('simulate_protocol_error', False):
-                if random.random() >= 0.75:
-                    error_type = random.random()
-                    if error_type <= 0.5:
-                        packet = (packet[0], 'X', packet[2], packet[3])
-                        self.emmit('INFO', f'Simulating packet ping/pong error')
-                    else:
-                        packet = (packet[0], packet[1], 'XXXX', packet[3])
-                        self.emmit('INFO', f'Simulating packet timestamp error')
-
-            # Delay simulation
-            if self._settings.get('simulate_delay', False):
-                delay = random.random() * (0.2 - 0.01) + 0.01
-                time.sleep(delay)
-                self.emmit('INFO', f'Simulating packet delay with {delay * 1000:.2f}ms')
-
-        return create_packet(*packet)

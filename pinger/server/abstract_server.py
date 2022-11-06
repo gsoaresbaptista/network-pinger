@@ -4,6 +4,8 @@ import os
 import sys
 import datetime
 import socket
+import time
+import random
 from packet import create_packet, read_packet, check_packet
 
 
@@ -22,7 +24,11 @@ class AbstractServer(ABC):
         self._response_socket: socket.socket
         self._configurations: Dict[str, bool | int | float | str] = {}
         self._timeout = timeout
-        self._settings = {'simulate_delay': False, 'simulate_loss': False}
+        self._settings = {
+            'simulate_delay': False,
+            'simulate_loss': False,
+            'simulate_protocol_error': False,
+        }
 
     @abstractmethod
     def connect(self, server_ip: str, server_port: int) -> None:
@@ -40,17 +46,10 @@ class AbstractServer(ABC):
         '''
 
     @abstractmethod
-    def check(self) -> Dict[str, int | float | str]:
-        '''Return server state.
-        :param None
-        :return None
-        '''
-
-    @abstractmethod
     def _listen_one(self) -> Tuple[bytes | None, Tuple[str, int]]:
         '''Procedure to handle a packetd in the defined pattern.
         :param None
-        :return None
+        :return Tuple[str, int] - Tuple with response packet and client address
         '''
 
     @abstractmethod
@@ -60,6 +59,17 @@ class AbstractServer(ABC):
         :param address - Tuple[str, int], server address and server port
         :return None
         '''
+
+    def check(self) -> Dict[str, int | float | str]:
+        '''Return server state.
+        :param None
+        :return Dictionary with str key and a value for all server parameters
+        '''
+        return {
+            'server_ip': self._address[0],
+            'server_port': self._address[1],
+            **self._settings,
+        }
 
     def set_setting(self, key: str, value: int | float | str | bool) -> None:
         '''Set a server setting to a new value provided.
@@ -122,6 +132,7 @@ class AbstractServer(ABC):
     @staticmethod
     def emmit(category: str, message: str) -> None:
         '''Emmit a message to standart output.
+        :param category - str, text with message category
         :param message - str, text to emmit
         :return None
         '''
@@ -144,8 +155,42 @@ class AbstractServer(ABC):
         AbstractServer.emmit('ERROR', str(message))
         return None
 
+    def _custom_simulations(self, response: bytes | None) -> bytes | None:
+        '''Hook to create custom simulations in child classes.
+        :param response - bytes, response packet, passed to change in simulations
+        :return bytes | none, new response packet
+        '''
+        return response
+
     def _simulations(self, response: bytes | None) -> bytes | None:
         '''Compute all simulations that are enabled.
         :param response - bytes, response packet, passed to change in simulations
         :return bytes | none, new response packet
         '''
+        packet = read_packet(response.decode('ascii'))
+
+        if response is not None:
+            # Loss simulation
+            if self._settings.get('simulate_loss', False):
+                if random.random() >= 0.75:
+                    self.emmit('INFO', f'Simulating packet loss')
+                    return None
+
+            # Protocol errors simultion
+            if self._settings.get('simulate_protocol_error', False):
+                if random.random() >= 0.75:
+                    error_type = random.random()
+                    if error_type <= 0.5:
+                        packet = (packet[0], 'X', packet[2], packet[3])
+                        self.emmit('INFO', f'Simulating packet ping/pong error')
+                    else:
+                        packet = (packet[0], packet[1], 'XXXX', packet[3])
+                        self.emmit('INFO', f'Simulating packet timestamp error')
+
+            # Delay simulation
+            if self._settings.get('simulate_delay', False):
+                delay = random.random() * (0.2 - 0.01) + 0.01
+                time.sleep(delay)
+                self.emmit('INFO', f'Simulating packet delay with {delay * 1000:.2f}ms')
+
+        return self._custom_simulations(create_packet(*packet))

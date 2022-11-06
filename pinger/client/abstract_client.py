@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Tuple, List
+from typing import Tuple, List, Dict
 import os
 import sys
 import time
@@ -66,7 +66,8 @@ class AbstractClient(ABC):
     def wait_response(self) -> float | None:
         '''Make client wait for a response from the server.
         :param None
-        :return None
+        :return float or None - rrt computed or None if there is an error
+                                or inconsistency response
         '''
 
     @abstractmethod
@@ -79,11 +80,23 @@ class AbstractClient(ABC):
     @staticmethod
     def emmit(category: str, message: str) -> None:
         '''Emmit a message to standart output.
+        :param category - str, text with message category
         :param message - str, text to emmit
         :return None
         '''
         now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         print(f"{now} - {category:5} | {message}")
+
+    def check(self) -> Dict[str, int | float | str]:
+        '''Return client state.
+        :param None
+        :return Dictionary with str key and a value for all client parameters
+        '''
+        return {
+            'connected_server_ip': self._server_address[0],
+            'connected_server_port': self._server_address[1],
+            'timeout_time': self._timeout,
+        }
 
     def _create_csv(self, save_csv: bool) -> None:
         '''Create the csv file with sent and received packets and rtt data.

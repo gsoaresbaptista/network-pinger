@@ -1,7 +1,7 @@
 import socket
 import random
 import string
-from typing import Dict, Tuple
+from typing import Tuple
 from packet import create_packet, read_packet, check_packet, get_timestamp
 from .abstract_client import AbstractClient
 
@@ -39,17 +39,6 @@ class UDPClient(AbstractClient):
         self._socket.close()
         self.emmit('END', 'Client socket closed')
 
-    def check(self) -> Dict[str, int | float | str]:
-        '''Return client state.
-        :param None
-        :return None
-        '''
-        return {
-            'connected_server_ip': self._server_address[0],
-            'connected_server_port': self._server_address[1],
-            'timeout_time': self._timeout,
-        }
-
     def send_to_server(self, seqid: str = '0', message: str | None = None) -> Tuple[str, int]:
         '''Send a packet to connected server.
         :param seqid - str, sequence number
@@ -73,7 +62,8 @@ class UDPClient(AbstractClient):
     def wait_response(self) -> float | None:  # type: ignore
         '''Make client wait for a response from the server.
         :param None
-        :return None
+        :return float or None - rrt computed or None if there is an error
+                                or inconsistency response
         '''
         valid = False
 
