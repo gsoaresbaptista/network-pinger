@@ -79,9 +79,12 @@ class UDPServer(AbstractServer):
 
         if response is not None:
             if self._settings.get('simulate_delay', False):
-                time.sleep(random.random() * (0.2 - 0.01) + 0.01)
+                delay = random.random() * (0.2 - 0.01) + 0.01
+                time.sleep(delay)
+                self.emmit('INFO', f'Simulating packet delay with {delay * 1000:.2f}ms')
             if self._settings.get('simulate_loss', False):
                 if random.random() >= 0.75:
                     new_response = None
+                    self.emmit('INFO', f'Simulating packet loss')
 
         return new_response
