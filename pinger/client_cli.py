@@ -40,7 +40,7 @@ if __name__ == '__main__':
     # stdout change
     if args.logger:
         previous = sys.stdout
-        sys.stdout = open('client_log.txt', 'a', encoding='utf8')
+        sys.stdout = open('client_log.txt', 'w', encoding='utf8')
 
     client = UDPClient('127.0.0.1', 3000, int(args.timeout), int(args.packets), args.csv)
     client.run()
