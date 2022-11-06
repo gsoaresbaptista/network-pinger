@@ -37,6 +37,8 @@ The client handles the failures simulated by the server, considering them when c
 ## Server Parameters
 
 Some parameters can be passed to the server cli to change certain behaviors. Are they:
+- ```-ip``` or ```--server_ip```: Defines the ip address that the server will be hosted. (Default: 127.0.0.1)
+- ```-port``` or ```--server_port```: Defines the port that the server will be hosted. (Default: 3000)
 - ```-l``` or ```--logger```: The server saves all stdout output in the server_log.txt file.
 - ```-t NUMBER``` or ```--timeout NUMBER```: The server stops after **NUMBER** seconds with no requests.
 - ```-sd``` or ```--simulate_delay```: The server allows packet delay response simulation.
@@ -54,6 +56,8 @@ Server running with a timeout of 2 seconds and simulating delay and loss.
 ## Client Parameters
 
 The client can receive parameters below by command line:
+- ```-ip``` or ```--server_ip```: Defines the IP address to which the client will connect. (Default: 127.0.0.1)
+- ```-port``` or ```--server_port```: Defines the port the server will connect to. (Default: 3000)
 - ```-l``` or ```--logger```: The client saves all stdout output in the client_log.txt file.
 - ```-t NUMBER``` or ```--timeout NUMBER```: The client will consider the packet lost after waiting for **NUMBER** seconds.
 - ```-c``` or ```--csv```: The client saves all sent and received packet data in the packets_data.csv file.
@@ -136,4 +140,5 @@ sid_sent,sid_received,type_sent,type_received,timestamp_sent,timestamp_received,
 00004,00004,0,1,7001,7148,nvqvthszkpgfyo,nvqvthszkpgfyo,147.0
 ```
 
-Note that when a packet is lost the sid is **'00000'**, timestamp **'0000'**, type_received **'0'** and the rtt **None**.
+Note that when a packet is lost the sid is **'00000'**, timestamp **'0000'**, type_received **'0'** and the rtt **None**. As it was not informed, the ip address will be **127.0.0.1** and the port **3000**.
+

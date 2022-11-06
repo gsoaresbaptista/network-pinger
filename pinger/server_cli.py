@@ -10,6 +10,20 @@ if __name__ == '__main__':
         description=("Run a server to receive ping and respond " "with pong to compute rtt."),
     )
     parser.add_argument(
+        "-ip",
+        "--server_ip",
+        help=('Set the IP address that the server will use. Default is 127.0.0.1.'),
+        action='store',
+        default='127.0.0.1',
+    )
+    parser.add_argument(
+        "-port",
+        "--server_port",
+        help=('Set the port that the server will use. Default is 3000.'),
+        action='store',
+        default=3000,
+    )
+    parser.add_argument(
         "-l",
         "--logger",
         help='Save all server output in log file.',
@@ -48,7 +62,7 @@ if __name__ == '__main__':
         sys.stdout = open('server_log.txt', 'w', encoding='utf8')
 
     # server run
-    server: Server = UDPServer(int(args.timeout))
+    server: Server = UDPServer(timeout=int(args.timeout))
 
     # settings
     if args.simulate_delay:
@@ -61,7 +75,10 @@ if __name__ == '__main__':
         server.set_setting('simulate_protocol_error', True)
 
     server.emmit_setting()
-    server.connect('127.0.0.1', 3000)
+    server.connect(
+        server_ip=args.server_ip,
+        server_port=int(args.server_port),
+    )
     server.listen()
 
     # revert stdout change
