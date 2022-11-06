@@ -82,9 +82,8 @@ class UDPServer(AbstractServer):
             # Loss simulation
             if self._settings.get('simulate_loss', False):
                 if random.random() >= 0.75:
-                    new_response = None
                     self.emmit('INFO', f'Simulating packet loss')
-                    return new_response
+                    return None
 
             # Protocol errors simultion
             if self._settings.get('simulate_protocol_error', False):
@@ -102,6 +101,5 @@ class UDPServer(AbstractServer):
                 delay = random.random() * (0.2 - 0.01) + 0.01
                 time.sleep(delay)
                 self.emmit('INFO', f'Simulating packet delay with {delay * 1000:.2f}ms')
-                return new_response
 
         return create_packet(*packet)

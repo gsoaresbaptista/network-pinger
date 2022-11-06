@@ -14,9 +14,10 @@ class UDPClient(AbstractClient):
         server_ip: str,
         server_port: int,
         timeout: float | int,
+        number_of_packets: int = 10,
         save_csv: bool = False,
     ) -> None:
-        super().__init__(server_ip, server_port, timeout, save_csv)
+        super().__init__(server_ip, server_port, timeout, number_of_packets, save_csv)
         self.connect()
 
     def connect(self) -> None:
