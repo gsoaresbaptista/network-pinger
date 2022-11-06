@@ -4,8 +4,8 @@ from packet import get_timestamp
 def create_packet(
     packet_id: str,
     packet_type: str,
-    message: str,
     time: str | None = None,
+    message: str = None,
 ) -> bytes:
     '''Generate a standard-compliant packet
     In order, the packet consists of:

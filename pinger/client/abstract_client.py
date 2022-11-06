@@ -123,7 +123,7 @@ class AbstractClient(ABC):
                     'RECV',
                     f'Reply received successfully, rtt = {int(rtt)}ms',
                 )
-            else:
+            elif self._received_packet and self._received_packet[3] == 'TIMEOUTERROR':
                 self.emmit('ERROR', 'Timeout waiting for response, packet was lost')
 
             if self._csv is not None:

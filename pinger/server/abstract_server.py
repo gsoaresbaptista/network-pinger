@@ -138,7 +138,7 @@ class AbstractServer(ABC):
         valid, message = check_packet(sid, ptype, time, content, True)
 
         if valid:
-            return create_packet(sid, '1', content, time)
+            return create_packet(sid, '1', time, content)
 
         AbstractServer.emmit('ERROR', str(message))
         return None

@@ -6,9 +6,9 @@ def read_packet(packet: str) -> Tuple[str, str, str, str]:
     Unpack all packet data into single variables
     :param packet - str, packet decoded in ascii format
     :return
-        - id_sequence - int, sequence number
-        - packet_type - int, 0 if ping or 1 for pong
-        - timestamp - int, timestamp in seconds
+        - id_sequence - str, sequence number
+        - packet_type - str, 0 if ping or 1 for pong
+        - timestamp - str, timestamp in seconds
         - content - str, packet content
     '''
     id_sequence = packet[:5]

@@ -31,7 +31,13 @@ if __name__ == '__main__':
     parser.add_argument(
         "-sl",
         "--simulate_loss",
-        help=('Simulate server-side loss with 25%% of change.'),
+        help=('Simulate server-side loss with 25%% of chance.'),
+        action='store_true',
+    )
+    parser.add_argument(
+        "-sp",
+        "--simulate_protocol_error",
+        help=('Simulate server-side protocol errors with 25%% of chance.'),
         action='store_true',
     )
     args = parser.parse_args()
@@ -50,6 +56,9 @@ if __name__ == '__main__':
 
     if args.simulate_loss:
         server.set_setting('simulate_loss', True)
+
+    if args.simulate_protocol_error:
+        server.set_setting('simulate_protocol_error', True)
 
     server.emmit_setting()
     server.connect('127.0.0.1', 3000)

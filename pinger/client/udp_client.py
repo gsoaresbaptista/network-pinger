@@ -61,7 +61,7 @@ class UDPClient(AbstractClient):
             message = ''.join(random.choices(string.ascii_lowercase, k=content_size))
 
         # send message to server
-        packet = create_packet(seqid, '0', message)
+        packet = create_packet(seqid, '0', None, message)
         self._socket.sendto(packet, self._server_address)
 
         # save the sent packet to compare with the response
@@ -83,11 +83,13 @@ class UDPClient(AbstractClient):
                 valid, message = check_packet(sid, ptype, time, content, False)
 
                 # compare received packet with the last sent one
-                valid = sid == self._sent_packet[0]
-                message = 'Sequence id is not the same'
+                if valid:
+                    valid = sid == self._sent_packet[0]
+                    message = 'Sequence id is not the same'
 
                 if not valid:
                     AbstractClient.emmit('ERROR', str(message))
+                    return None
                 else:
                     # save the received packet to compare
                     current_time = get_timestamp()

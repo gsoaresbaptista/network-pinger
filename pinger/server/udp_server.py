@@ -3,6 +3,7 @@ import random
 import socket
 from typing import Dict, Tuple
 from server.abstract_server import AbstractServer
+from packet import read_packet, create_packet
 
 
 class UDPServer(AbstractServer):
@@ -75,16 +76,32 @@ class UDPServer(AbstractServer):
         :param response - bytes, response packet, passed to change in simulations
         :return bytes | none, new response packet
         '''
-        new_response = response
+        packet = read_packet(response.decode('ascii'))
 
         if response is not None:
-            if self._settings.get('simulate_delay', False):
-                delay = random.random() * (0.2 - 0.01) + 0.01
-                time.sleep(delay)
-                self.emmit('INFO', f'Simulating packet delay with {delay * 1000:.2f}ms')
+            # Loss simulation
             if self._settings.get('simulate_loss', False):
                 if random.random() >= 0.75:
                     new_response = None
                     self.emmit('INFO', f'Simulating packet loss')
+                    return new_response
 
-        return new_response
+            # Protocol errors simultion
+            if self._settings.get('simulate_protocol_error', False):
+                if random.random() >= 0.75:
+                    error_type = random.random()
+                    if error_type <= 0.5:
+                        packet = (packet[0], 'X', packet[2], packet[3])
+                        self.emmit('INFO', f'Simulating packet ping/pong error')
+                    else:
+                        packet = (packet[0], packet[1], 'XXXX', packet[3])
+                        self.emmit('INFO', f'Simulating packet timestamp error')
+
+            # Delay simulation
+            if self._settings.get('simulate_delay', False):
+                delay = random.random() * (0.2 - 0.01) + 0.01
+                time.sleep(delay)
+                self.emmit('INFO', f'Simulating packet delay with {delay * 1000:.2f}ms')
+                return new_response
+
+        return create_packet(*packet)

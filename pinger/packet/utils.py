@@ -30,11 +30,11 @@ def check_packet(sid: str, ptype: str, timestamp: str, content: str, ping_expect
     :return True if it passes all integrity conditions, False otherwise
     '''
     if not sid.isnumeric():
-        return False, 'Non numeric sequence number'
+        return False, f"Non numeric sequence number {'sent' if ping_expected else 'received'}"
     if (ptype != '0' and ping_expected) or (ptype != '1' and not ping_expected):
-        return False, 'Ping-pong received incorrectly'
+        return False, f"Ping-pong {'sent' if ping_expected else 'received'} incorrectly"
     if not timestamp.isnumeric():
-        return False, 'Non numeric timestamp'
+        return False, f"Non numeric timestamp {'sent' if ping_expected else 'received'}"
     if len(content) > 30:
         return False, 'Larger content than allowed'
     return True, None
