@@ -173,24 +173,27 @@ class AbstractServer(ABC):
             # Loss simulation
             if self._settings.get('simulate_loss', False):
                 if random.random() >= 0.75:
-                    self.emmit('INFO', f'Simulating packet loss')
+                    self.emmit('INFO', 'Simulating packet loss')
                     return None
 
             # Protocol errors simultion
             if self._settings.get('simulate_protocol_error', False):
-                if random.random() >= 0.75:
+                if random.uniform(0, 1) >= 0.75:
                     error_type = random.random()
-                    if error_type <= 0.5:
+                    if error_type < 0.33:
                         packet = (packet[0], 'X', packet[2], packet[3])
-                        self.emmit('INFO', f'Simulating packet ping/pong error')
-                    else:
+                        self.emmit('INFO', 'Simulating packet ping/pong error')
+                    elif error_type < 0.66:
                         packet = (packet[0], packet[1], 'XXXX', packet[3])
-                        self.emmit('INFO', f'Simulating packet timestamp error')
+                        self.emmit('INFO', 'Simulating packet timestamp error')
+                    else:
+                        packet = (packet[0], packet[1], packet[2], 'XXXX')
+                        self.emmit('INFO', 'Simulating packet message error')
 
             # Delay simulation
             if self._settings.get('simulate_delay', False):
                 delay = random.random() * (0.2 - 0.01) + 0.01
                 time.sleep(delay)
-                self.emmit('INFO', f'Simulating packet delay with {delay * 1000:.2f}ms')
+                # self.emmit('INFO', f'Simulating packet delay with {delay * 1000:.2f}ms')
 
         return self._custom_simulations(create_packet(*packet))

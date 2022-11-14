@@ -142,6 +142,12 @@ class AbstractClient(ABC):
                 rtt = self.wait_response()
                 seqid = int(self._received_packet[0])
 
+            # compare if messages are the same
+            if rtt is not None and self._received_packet[3] != self._sent_packet[3]:
+                rtt = None
+                self._received_packet = ('00000', '0', '0000', 'INVALIDMESSAGE')
+                self.emmit('ERROR', 'Messages are not the same')
+
             if rtt is not None:
                 # fix rtt if timestamp exceeds limit
                 rtt += 10000.0 if rtt < 0 else 0

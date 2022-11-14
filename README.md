@@ -30,7 +30,8 @@ Some parameters can be passed to  both cli, to see more about this add ```--help
 The server can simulate a few possible fauls, such as:
 - Delayed response: Wait min **10ms** and max **200ms** to send the response
 - Packet loss: Response packet is not sent to client with **25%** chance
-- Packet protocol errors: Add a protocol error to packet with **25%** chance
+- Packet protocol errors: Add a protocol error to packet with **25%** chance. Could be, invalid ping/pong, non-numeric timestamp and different messages
+
 
 The client handles the failures simulated by the server, considering them when calculating the statistics. All simulations must be enabled if desired as they are disabled by default.
 
